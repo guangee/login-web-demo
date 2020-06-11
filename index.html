@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+
+    <title>Starter Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+
+<div class="container">
+    <h1>登录注册demo</h1>
+
+    <div id="register">
+        <div class="form-group">
+            <label for="register_username">账号</label>
+            <input type="text" class="form-control" id="register_username" name="username" placeholder="账号">
+        </div>
+        <div class="form-group">
+            <label for="register_nickname">昵称</label>
+            <input type="text" class="form-control" id="register_nickname" name="nickname" placeholder="昵称">
+        </div>
+
+        <div class="form-group">
+            <label for="register_password">密码</label>
+            <input type="password" class="form-control" id="register_password" name="password" placeholder="密码">
+        </div>
+        <button type="submit" class="btn btn-default" onclick="register()">注册</button>
+    </div>
+
+    <table class="table" id="table">
+        <tr>
+            <th>姓名</th>
+            <th>昵称</th>
+            <th>密码</th>
+        </tr>
+    </table>
+
+    <div id="login">
+        <div class="form-group">
+            <label for="login_username">账号</label>
+            <input type="email" class="form-control" id="login_username" name="username" placeholder="账号">
+        </div>
+        <div class="form-group">
+            <label for="login_password">密码</label>
+            <input type="password" class="form-control" id="login_password" name="password" placeholder="密码">
+        </div>
+        <button type="submit" class="btn btn-success" onclick="login()">点击登录</button>
+    </div>
+
+
+</div>
+
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script>
+    var host = "https://api-login-demo.guanweiming.com";
+    let loadUser = function () {
+        $.ajax({
+            url: host + "/api/user/allUser",
+            method: "GET",
+            data: {
+                page: 1,
+                size: 10
+            },
+            success: function (res) {
+                if (res.status === 0) {
+                    const list = res.data;
+                    for (let i = 0; i < list.length; i++) {
+                        const item = list[i];
+                        $("#table").append("<tr><td>" + item.username + "</td><td>" + item.nickname + "</td><td>" + item.password + "</td></tr>");
+                    }
+                }
+            }
+        })
+    };
+    $(loadUser)
+
+    function login() {
+        var username = $("#login").find("input[name='username']").val();
+        var password = $("#login").find("input[name='password']").val();
+        if (username === undefined || username === '') {
+            alert("用户名不允许为空");
+            return;
+        }
+        if (password === undefined || password === '') {
+            alert("密码不允许为空");
+            return;
+        }
+        $.ajax({
+            url: host + "/api/user/login",
+            method: "POST",
+            data: {
+                username: username,
+                password: password
+            },
+            success: function (res) {
+                if (res.status === 0) {
+                    alert(res.data.username + "登录成功");
+                } else {
+                    alert(res.msg)
+                }
+            }
+        })
+    }
+
+    function register() {
+        var username = $("#register").find("input[name='username']").val();
+        var password = $("#register").find("input[name='password']").val();
+        var nickname = $("#register").find("input[name='nickname']").val();
+        if (username === undefined || username === '') {
+            alert("用户名不允许为空");
+            return;
+        }
+        if (password === undefined || password === '') {
+            alert("密码不允许为空");
+            return;
+        }
+        $.ajax({
+            url: host + "/api/user/register",
+            method: "POST",
+            data: {
+                username: username,
+                nickname: nickname,
+                password: password
+            },
+            success: function (res) {
+                if (res.status === 0) {
+                    alert(res.data.username + "注册成功");
+                    location.reload();
+                } else {
+                    alert(res.msg)
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>
